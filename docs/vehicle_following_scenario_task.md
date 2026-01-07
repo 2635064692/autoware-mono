@@ -116,42 +116,28 @@ d_rss = v_ego × idling_time + v_ego²/(2|a_ego|) - v_obj²/(2|a_obj|) + margin
 
 ## 三、实施计划
 
-### 3.1 配置文件修改
+### 3.1 配置（方案 B：场景专用参数 + launch 覆盖）
 
-**目标文件:**
-```
-src/launcher/autoware_launch/autoware_launch/config/planning/scenario_planning/
-  lane_driving/motion_planning/motion_velocity_planner/obstacle_cruise.param.yaml
-```
+为避免污染默认配置，本仓库新增了 Bus 跟随 3m 的场景专用参数文件，并通过 launch 参数覆盖加载：
 
-**Unified Diff Patch:**
+- 场景参数文件：`.../motion_velocity_planner/obstacle_cruise.bus_following_3m.param.yaml`
+- 覆盖的关键参数：
+  - `cruise_planning.idling_time = 0.0`
+  - `cruise_planning.safe_distance_margin = 3.0`
+- 透传/覆盖用的 launch arg：`motion_velocity_planner_obstacle_cruise_module_param_path`
 
-```diff
-diff --git a/obstacle_cruise.param.yaml b/obstacle_cruise.param.yaml
---- a/obstacle_cruise.param.yaml
-+++ b/obstacle_cruise.param.yaml
-@@ -5,10 +5,10 @@
-       option:
-         planning_algorithm: "pid_base" # currently supported algorithm is "pid_base"
+**使用方式：**
 
-       cruise_planning:
--        idling_time: 2.0 # idling time to detect front vehicle starting deceleration [s]
-+        idling_time: 0.0 # idling time to detect front vehicle starting deceleration [s]
-         min_ego_accel_for_rss: -1.0 # ego's acceleration to calculate RSS distance [m/ss]
-         min_object_accel_for_rss: -1.0 # front obstacle's acceleration to calculate RSS distance [m/ss]
--        safe_distance_margin : 5.0 # This is also used as a stop margin [m]
-+        safe_distance_margin : 3.0 # This is also used as a stop margin [m]
-
-         pid_based_planner:
-           use_velocity_limit_based_planner: true
+```bash
+# 3m 场景：显式覆盖 obstacle_cruise 参数文件路径
+ros2 launch autoware_launch planning_simulator.launch.xml \
+    map_path:=/path/to/map \
+    vehicle_model:=sample_vehicle \
+    sensor_model:=sample_sensor_kit \
+    motion_velocity_planner_obstacle_cruise_module_param_path:=$(ros2 pkg prefix --share autoware_launch)/config/planning/scenario_planning/lane_driving/motion_planning/motion_velocity_planner/obstacle_cruise.bus_following_3m.param.yaml
 ```
 
-**修改说明:**
-
-| 参数 | 原值 | 新值 | 作用 |
-|------|------|------|------|
-| `idling_time` | 2.0 | 0.0 | 消除 `v × t` 时间头距项 |
-| `safe_distance_margin` | 5.0 | 3.0 | 设置目标跟车间距 |
+> 基线（默认配置）采集：不要传 `motion_velocity_planner_obstacle_cruise_module_param_path`，保持默认参数文件路径不变。
 
 ### 3.2 RViz 操作步骤
 
@@ -218,6 +204,14 @@ ros2 topic echo /planning/scenario_planning/lane_driving/motion_planning/obstacl
 | 9 | `CRUISE_ERROR_DISTANCE_FILTERED` | 趋近 0 |
 
 **验收口径**: `data[7] ≈ 3.0` 且 `data[9] ≈ 0` 持续 5 秒以上。
+
+**取证建议（推荐其一）：**
+
+```bash
+# 记录一段连续输出用于 Review（再手动标注满足 ≥5s 的区间）
+timeout 10s ros2 topic echo /planning/scenario_planning/lane_driving/motion_planning/obstacle_cruise/debug/obstacle_cruise/planning_info \\
+  | tee phase5_planning_info.log
+```
 
 ---
 
