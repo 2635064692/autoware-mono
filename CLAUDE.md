@@ -55,13 +55,13 @@ execute-command(cmdString: "docker exec heuristic_joliot bash -c '命令'")
 ### 容器内编译 (通过 SSH MCP)
 ```bash
 # 拉取最新代码
-docker exec heuristic_joliot bash -c "cd /autoware && git pull"
+docker exec heuristic_joliot bash -c "cd /workspace && git pull"
 
 # 编译指定包
-docker exec heuristic_joliot bash -c "source /opt/ros/humble/setup.bash && cd /autoware && colcon build --packages-select <package_name> --symlink-install"
+docker exec heuristic_joliot bash -c "source /opt/ros/humble/setup.bash && cd /workspace && colcon build --packages-select <package_name> --symlink-install"
 
 # 编译全部
-docker exec heuristic_joliot bash -c "source /opt/ros/humble/setup.bash && cd /autoware && colcon build --symlink-install"
+docker exec heuristic_joliot bash -c "source /opt/ros/humble/setup.bash && cd /workspace && colcon build --symlink-install"
 ```
 
 ## 代码结构
@@ -139,13 +139,13 @@ git status && git diff --stat
 
 ```bash
 # 拉取代码
-docker exec heuristic_joliot bash -c "cd /autoware && git pull"
+docker exec heuristic_joliot bash -c "cd /workspace && git pull"
 
 # 编译指定包
-docker exec heuristic_joliot bash -c "source /opt/ros/humble/setup.bash && cd /autoware && colcon build --packages-select <pkg> --symlink-install"
+docker exec heuristic_joliot bash -c "source /opt/ros/humble/setup.bash && cd /workspace && colcon build --packages-select <pkg> --symlink-install"
 
 # 运行 Planning Simulator
-docker exec heuristic_joliot bash -c "source /autoware/install/setup.bash && ros2 launch autoware_launch planning_simulator.launch.xml map_path:=/path/to/map vehicle_model:=sample_vehicle sensor_model:=sample_sensor_kit"
+docker exec heuristic_joliot bash -c "source /workspace/install/setup.bash && ros2 launch autoware_launch planning_simulator.launch.xml map_path:=/path/to/map vehicle_model:=sample_vehicle sensor_model:=sample_sensor_kit"
 ```
 
 ## 当前研究任务
