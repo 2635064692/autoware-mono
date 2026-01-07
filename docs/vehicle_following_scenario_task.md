@@ -236,6 +236,27 @@ ros2 topic echo /planning/scenario_planning/lane_driving/motion_planning/obstacl
 - `planning_info.data[7]`（目标距离）与 `planning_info.data[9]`（距离误差）的截图/日志
 - 启动命令（含所有 launch args）
 
+### 3.5 交付、回滚与可追溯性（可直接复制到 PR/提交说明）
+
+**改动文件列表（关键行为变更）：**
+- `src/launcher/autoware_launch/autoware_launch/launch/planning_simulator.launch.xml`：新增并透传 `motion_velocity_planner_obstacle_cruise_module_param_path`
+- `src/launcher/autoware_launch/autoware_launch/launch/autoware.launch.xml`：透传 `motion_velocity_planner_obstacle_cruise_module_param_path` 到 planning 组件
+- `src/launcher/autoware_launch/autoware_launch/launch/components/tier4_planning_component.launch.xml`：允许覆盖 `motion_velocity_planner_obstacle_cruise_module_param_path`
+- `src/launcher/autoware_launch/autoware_launch/config/planning/scenario_planning/lane_driving/motion_planning/motion_velocity_planner/obstacle_cruise.bus_following_3m.param.yaml`：场景专用参数（`idling_time=0.0`，`safe_distance_margin=3.0`）
+
+**关键参数值：**
+- `cruise_planning.idling_time = 0.0`
+- `cruise_planning.safe_distance_margin = 3.0`
+- 覆盖入口：launch arg `motion_velocity_planner_obstacle_cruise_module_param_path`（见 “配置（方案 B）”）
+
+**Phase 5 验收证据（待补，建议产物）：**
+- `phase5_planning_info.log`（见 “取证建议” 的 `timeout 10s ... | tee`）
+- RViz 截图/录屏（展示稳定跟随与无明显震荡）
+
+**一键回滚：**
+- 运行时回滚：不传 `motion_velocity_planner_obstacle_cruise_module_param_path`（恢复默认参数文件路径）。
+- 代码回滚（按需）：`git revert b8f3dca 0605da9`（先回滚 `b8f3dca` 再回滚 `0605da9`）。
+
 ## 四、关键参数说明
 
 ### 4.1 obstacle_cruise.param.yaml 完整参数
