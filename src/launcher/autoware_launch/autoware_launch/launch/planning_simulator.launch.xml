@@ -9,6 +9,11 @@
   <!-- launch module preset -->
   <arg name="planning_module_preset" default="default" description="planning module preset"/>
   <arg name="control_module_preset" default="default" description="control module preset"/>
+  <arg
+    name="motion_velocity_planner_obstacle_cruise_module_param_path"
+    default="$(find-pkg-share autoware_launch)/config/planning/scenario_planning/lane_driving/motion_planning/motion_velocity_planner/obstacle_cruise.param.yaml"
+    description="override obstacle_cruise module parameter file path"
+  />
 
   <!-- Optional parameters -->
   <!-- Map -->
@@ -61,6 +66,10 @@
       <!-- launch module preset -->
       <arg name="planning_module_preset" value="$(var planning_module_preset)"/>
       <arg name="control_module_preset" value="$(var control_module_preset)"/>
+      <arg
+        name="motion_velocity_planner_obstacle_cruise_module_param_path"
+        value="$(var motion_velocity_planner_obstacle_cruise_module_param_path)"
+      />
       <!-- Modules to be launched -->
       <arg name="launch_sensing" value="false"/>
       <arg name="launch_localization" value="false"/>

@@ -21,6 +21,7 @@ created_at: 2026-01-07T16:57:46+08:00
    - 影响范围：仅当显式覆盖 `motion_velocity_planner_obstacle_cruise_module_param_path` 时生效；默认 preset 与默认参数路径保持不变。
    - 回滚方式：不传/移除覆盖参数路径即可回到默认；或直接 `git revert` 本次提交。
 3. 实施参数改动并自检：确保 YAML 语法正确、缩进保持一致；确认参数键名与作用域 `/**/ros__parameters/obstacle_cruise/cruise_planning` 一致。
+   - 场景专用参数：`.../motion_velocity_planner/obstacle_cruise.bus_following_3m.param.yaml`（`idling_time=0.0`，`safe_distance_margin=3.0`），通过 `motion_velocity_planner_obstacle_cruise_module_param_path` 覆盖加载。
 4. 运行连通性检查：按文档检查 dummy perception → detection → predicted objects 链路是否齐全，避免“没跟上其实是没感知输入”。
 5. 运行验收验证（核心）：观察 `.../obstacle_cruise/.../planning_info`，确认 `data[7]`（目标距离）稳定接近 `3.0m` 且 `data[9]`（距离误差）接近 `0`，持续 ≥ 5 秒；同时在 RViz 观察自车轨迹与速度变化是否平滑。
 6. 轻量回归与调参兜底：若出现震荡/距离不稳，优先在 `obstacle_cruise.param.yaml` 中小幅调整 `kp/kd` 与（如需要）`velocity_smoother` 配置，区分“模块内部目标距离稳定”与“最终轨迹平滑限制”两类问题。

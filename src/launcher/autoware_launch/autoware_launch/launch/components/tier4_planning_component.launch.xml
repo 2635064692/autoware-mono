@@ -11,6 +11,12 @@
   <arg name="planning_input_objects_topic_name" default="/perception/object_recognition/objects"/>
   <arg name="planning_input_pointcloud_topic_name" default="/perception/obstacle_segmentation/pointcloud"/>
 
+  <!-- Optional parameter path overrides -->
+  <arg
+    name="motion_velocity_planner_obstacle_cruise_module_param_path"
+    default="$(find-pkg-share autoware_launch)/config/planning/scenario_planning/lane_driving/motion_planning/motion_velocity_planner/obstacle_cruise.param.yaml"
+  />
+
   <!-- Global parameters -->
   <group scoped="false">
     <include file="$(find-pkg-share autoware_global_parameter_loader)/launch/global_params.launch.py">
@@ -99,7 +105,7 @@
     <arg name="motion_velocity_planner_param_path" value="$(var motion_config_path)/motion_velocity_planner/motion_velocity_planner.param.yaml"/>
     <arg name="motion_velocity_planner_obstacle_stop_module_param_path" value="$(var motion_config_path)/motion_velocity_planner/obstacle_stop.param.yaml"/>
     <arg name="motion_velocity_planner_obstacle_slow_down_module_param_path" value="$(var motion_config_path)/motion_velocity_planner/obstacle_slow_down.param.yaml"/>
-    <arg name="motion_velocity_planner_obstacle_cruise_module_param_path" value="$(var motion_config_path)/motion_velocity_planner/obstacle_cruise.param.yaml"/>
+    <arg name="motion_velocity_planner_obstacle_cruise_module_param_path" value="$(var motion_velocity_planner_obstacle_cruise_module_param_path)"/>
     <arg name="motion_velocity_planner_dynamic_obstacle_stop_module_param_path" value="$(var motion_config_path)/motion_velocity_planner/dynamic_obstacle_stop.param.yaml"/>
     <arg name="motion_velocity_planner_out_of_lane_module_param_path" value="$(var motion_config_path)/motion_velocity_planner/out_of_lane.param.yaml"/>
     <arg name="motion_velocity_planner_obstacle_velocity_limiter_param_path" value="$(var motion_config_path)/motion_velocity_planner/obstacle_velocity_limiter.param.yaml"/>

@@ -10,6 +10,11 @@
   <!-- launch module preset -->
   <arg name="planning_module_preset" default="default" description="planning module preset"/>
   <arg name="control_module_preset" default="default" description="control module preset"/>
+  <arg
+    name="motion_velocity_planner_obstacle_cruise_module_param_path"
+    default="$(find-pkg-share autoware_launch)/config/planning/scenario_planning/lane_driving/motion_planning/motion_velocity_planner/obstacle_cruise.param.yaml"
+    description="parameter file path for motion_velocity_planner obstacle_cruise module"
+  />
 
   <!-- Optional parameters -->
   <!-- Modules to be launched -->
@@ -114,6 +119,10 @@
       <arg name="is_simulation" value="$(var is_simulation)"/>
       <arg name="use_sim_time" value="$(var use_sim_time)"/>
       <arg name="vehicle_model" value="$(var vehicle_model)"/>
+      <arg
+        name="motion_velocity_planner_obstacle_cruise_module_param_path"
+        value="$(var motion_velocity_planner_obstacle_cruise_module_param_path)"
+      />
     </include>
 
     <!-- Relay node for trajectory topic -->
