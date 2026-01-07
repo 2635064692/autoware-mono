@@ -312,6 +312,25 @@ tier4_simulation_msgs/msg/DummyObject
 | 目标距离不稳定 | velocity_smoother 限制 | 检查 ObstacleCruise 自身指标，与最终轨迹分开验证 |
 | PID 震荡 | 参数不匹配 | 调整 kp/kd 或启用低通滤波 |
 
+**Phase 6 兜底调参（最小边界 + 可追溯取证）**
+
+> 原则：只在“场景专用参数文件”内做最小调参；每次只动 1–2 个参数；每次都必须留下前后对照证据。
+
+1. **先判定是哪一层导致“震荡/不稳”**
+   - 若 `planning_info.data[7]/data[9]` 已稳定，但 RViz 轨迹仍抖：优先排查 `velocity_smoother` 的平滑/限幅影响（不要先动 ObstacleCruise）。
+   - 若 `planning_info.data[7]/data[9]` 本身不稳定：再考虑调 ObstacleCruise 的 PID 参数。
+
+2. **推荐的最小调参范围（按优先级）**
+   - 文件：`.../motion_velocity_planner/obstacle_cruise.bus_following_3m.param.yaml`
+   - 优先只调整 `pid_based_planner.velocity_limit_based_planner`：
+     - `kp`：降低可减小超调/震荡（例如每次 -10%）
+     - `kd`：适当增加可抑制振荡（例如每次 +10%）
+
+3. **取证方式（建议固定格式）**
+   - 启动命令与参数文件路径（必须包含 `motion_velocity_planner_obstacle_cruise_module_param_path`）
+   - `phase5_planning_info.log`（见 “取证建议” 的 `timeout 10s ... | tee`）
+   - 调参前后各保留一份日志，并在文件名中写明 `kp/kd` 取值
+
 ---
 
 ## 六、扩展建议
