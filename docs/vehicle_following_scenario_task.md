@@ -335,6 +335,8 @@ tier4_simulation_msgs/msg/DummyObject
 
 ## 六、扩展建议
 
+> 说明：本节为“可选升级项”的设计与草案，用于在 Phase 5/6 无法稳定达标时再启用；当前仓库未实现对应代码改动，落地需在 ROS2 环境编译验证。
+
 ### 6.1 增加距离策略参数 (推荐)
 
 在 ObstacleCruiseModule 中增加可选的距离计算策略：
