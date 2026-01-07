@@ -53,6 +53,8 @@ src/
 - 主容器：`heuristic_joliot`
 - 镜像：`autoware:universe-devel-cuda`
 - ROS：`humble`
+- 远端仓库目录（Host）：`/autoware-mono`
+- 容器内仓库目录（Container）：`/workspace`（与 Host 的 `/autoware-mono` 对应/挂载）
 
 使用方式（示例）：
 
@@ -67,20 +69,22 @@ execute-command(cmdString: "docker exec heuristic_joliot bash -c '命令'", conn
 容器内常用命令：
 
 ```bash
-# 拉取最新代码
-docker exec heuristic_joliot bash -c "cd /autoware && git pull"
+# 拉取最新代码（推荐：Host pull 一次即可；若未挂载则在容器内 pull）
+cd /autoware-mono && git pull
+# 或
+docker exec heuristic_joliot bash -c "cd /workspace && git pull"
 
 # 编译指定包
-docker exec heuristic_joliot bash -c "source /opt/ros/humble/setup.bash && cd /autoware && colcon build --packages-select <package_name> --symlink-install"
+docker exec heuristic_joliot bash -c "source /opt/ros/humble/setup.bash && cd /workspace && colcon build --packages-select <package_name> --symlink-install"
 
 # 编译全部
-docker exec heuristic_joliot bash -c "source /opt/ros/humble/setup.bash && cd /autoware && colcon build --symlink-install"
+docker exec heuristic_joliot bash -c "source /opt/ros/humble/setup.bash && cd /workspace && colcon build --symlink-install"
 ```
 
 运行 Planning Simulator（示例）：
 
 ```bash
-docker exec heuristic_joliot bash -c "source /autoware/install/setup.bash && ros2 launch autoware_launch planning_simulator.launch.xml map_path:=/path/to/map vehicle_model:=sample_vehicle sensor_model:=sample_sensor_kit"
+docker exec heuristic_joliot bash -c "source /workspace/install/setup.bash && ros2 launch autoware_launch planning_simulator.launch.xml map_path:=/path/to/map vehicle_model:=sample_vehicle sensor_model:=sample_sensor_kit"
 ```
 
 ## 代码质量与风格（尽量遵循仓库配置）
