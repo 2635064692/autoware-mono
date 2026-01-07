@@ -189,6 +189,12 @@ ros2 topic echo /perception/object_recognition/detection/objects --once
 ros2 topic echo /perception/object_recognition/objects --once
 ```
 
+**常见缺失定位（最小可行）**
+
+- 三个话题都无输出：优先确认 RViz 放置工具的 `Pose Topic` 为 `/simulation/dummy_perception_publisher/object_info`，以及 `planning_simulator.launch.xml` 中 `perception/enable_object_recognition=true`（默认即为 true）。
+- 仅 `object_info` 有输出：说明 DummyObject 已发布，下一步用 `ros2 topic info -v /perception/object_recognition/detection/objects` 确认是否有 publisher；若无，检查 dummy perception 相关节点是否启动。
+- `detection/objects` 有输出但 `object_recognition/objects` 无输出：优先检查 prediction/objects 相关节点是否启动、以及 Bus 分类是否为 `BUS`（被过滤/重分类会导致不进入 planning 输入）。
+
 **B. ObstacleCruise 模块状态**
 
 ```bash
