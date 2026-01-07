@@ -1,0 +1,62 @@
+# ===== Build artifacts =====
+build/
+install/
+log/
+devel/
+
+# ===== Compiled objects =====
+*.o
+*.so
+*.so.*
+*.a
+*.lo
+*.la
+
+# ===== Python =====
+*.pyc
+*.pyo
+__pycache__/
+*.egg-info/
+.eggs/
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ===== C++ =====
+*.gch
+*.pch
+
+# ===== IDEs =====
+.vscode/
+*.code-workspace
+.idea/
+*.iml
+*.swp
+*.swo
+*~
+
+# ===== ROS =====
+.catkin_workspace
+.catkin_tools/
+.colcon/
+
+# ===== System =====
+.DS_Store
+Thumbs.db
+.cache/
+*.log
+
+# ===== Temp files =====
+*.tmp
+*.bak
+*.orig
+
+# ===== Node.js =====
+node_modules/
+
+# ===== RViz =====
+capture/
+
+# ===== CodeChecker =====
+.codechecker/
