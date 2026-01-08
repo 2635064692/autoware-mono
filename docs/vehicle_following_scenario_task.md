@@ -148,6 +148,16 @@ ros2 launch autoware_launch planning_simulator.launch.xml \
        vehicle_model:=sample_vehicle \
        sensor_model:=sample_sensor_kit
    ```
+   - 自动跟随模式（不手动设置 goal）：
+     ```bash
+     ros2 launch autoware_launch planning_simulator.launch.xml \
+         map_path:=/path/to/map \
+         vehicle_model:=sample_vehicle \
+         sensor_model:=sample_sensor_kit \
+         enable_auto_follow:=true \
+         ahead_distance:=50.0 \
+         target_type:=BUS
+     ```
 
 2. **放置 Bus 障碍物**
    - 在 RViz 工具栏选择 "2D Dummy Bus" (快捷键: `b`)

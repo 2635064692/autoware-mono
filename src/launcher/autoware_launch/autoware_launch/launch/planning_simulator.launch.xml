@@ -43,6 +43,10 @@
   <arg name="vehicle_simulation" default="true" description="use vehicle simulation"/>
   <!-- Auto mode setting-->
   <arg name="enable_all_modules_auto_mode" default="$(var scenario_simulation)" description="enable all module's auto mode"/>
+  <!-- Auto follow (optional) -->
+  <arg name="enable_auto_follow" default="false" description="enable auto-follow goal publisher (MVP)"/>
+  <arg name="ahead_distance" default="50.0" description="virtual goal distance ahead of the locked target [m]"/>
+  <arg name="target_type" default="BUS" description="target object type to follow (MVP supports BUS)"/>
   <!-- Simulated time -->
   <arg name="use_sim_time" default="$(var scenario_simulation)"/>
   <!-- Localization-->
@@ -92,6 +96,20 @@
       <arg name="enable_all_modules_auto_mode" value="$(var enable_all_modules_auto_mode)"/>
       <arg name="is_simulation" value="true"/>
     </include>
+  </group>
+
+  <!-- Auto follow goal publisher (optional, default off) -->
+  <group if="$(var enable_auto_follow)">
+    <node
+      pkg="autoware_following_goal_publisher"
+      exec="autoware_following_goal_publisher_node"
+      name="following_goal_publisher"
+      output="screen"
+    >
+      <param name="enable_auto_follow" value="true"/>
+      <param name="ahead_distance" value="$(var ahead_distance)"/>
+      <param name="target_type" value="$(var target_type)"/>
+    </node>
   </group>
 
   <!-- Simulator -->

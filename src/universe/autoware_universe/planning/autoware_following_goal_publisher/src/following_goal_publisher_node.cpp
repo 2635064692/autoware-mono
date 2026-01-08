@@ -75,7 +75,7 @@ FollowingGoalPublisherNode::FollowingGoalPublisherNode(const rclcpp::NodeOptions
 {
   enable_auto_follow_ = declare_parameter<bool>("enable_auto_follow", false);
   publish_rate_hz_ = declare_parameter<double>("publish_rate_hz", 2.0);
-  ahead_distance_m_ = declare_parameter<double>("ahead_distance_m", kDefaultAheadDistanceM);
+  ahead_distance_ = declare_parameter<double>("ahead_distance", kDefaultAheadDistanceM);
 
   // Keep parameter surface aligned with later throttle work (AFBUS50M-040).
   update_threshold_position_m_ = declare_parameter<double>("update_threshold_position_m", 2.0);
@@ -226,7 +226,7 @@ void FollowingGoalPublisherNode::on_timer()
       publisher_count);
   }
 
-  const auto goal_res = generate_goal_pose_ahead(*it, objects->header, ahead_distance_m_, last_goal);
+  const auto goal_res = generate_goal_pose_ahead(*it, objects->header, ahead_distance_, last_goal);
   if (!goal_res.goal) {
     RCLCPP_WARN_THROTTLE(
       get_logger(), *get_clock(), debug_throttle_ms_,

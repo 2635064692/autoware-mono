@@ -63,7 +63,7 @@ private:
 
   bool enable_auto_follow_{false};
   double publish_rate_hz_{2.0};
-  double ahead_distance_m_{kDefaultAheadDistanceM};
+  double ahead_distance_{kDefaultAheadDistanceM};
 
   // Declared here for forward compatibility (used in AFBUS50M-040).
   double update_threshold_position_m_{2.0};
