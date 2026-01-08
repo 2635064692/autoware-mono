@@ -181,6 +181,21 @@ ros2 launch autoware_launch planning_simulator.launch.xml \
 
 ### 3.3 验证步骤
 
+**A0. 自动跟随闭环检查（enable_auto_follow=true，且不手动点 "2D Goal Pose"）**
+
+```bash
+# 0. 确认自动节点在持续更新 goal 入口（频率受阈值节流影响，通常 <= 2Hz）
+ros2 topic hz /planning/mission_planning/goal
+
+# 0.1 确认规划轨迹持续输出（不中断）
+ros2 topic hz /planning/trajectory
+ros2 topic echo /planning/trajectory --once
+
+# 0.2 可选：抓取 10s 的 obstacle_cruise planning_info 用于验收（见下方 Index 表）
+timeout 10s ros2 topic echo /planning/scenario_planning/lane_driving/motion_planning/obstacle_cruise/debug/obstacle_cruise/planning_info \\
+  | tee auto_follow_planning_info.log
+```
+
 **A. 链路连通性检查**
 
 ```bash
