@@ -64,7 +64,8 @@ TargetTracker::Result TargetTracker::update(
     return result;
   }
   if (objects.header.frame_id != ego_odometry.header.frame_id) {
-    result.debug = "frame mismatch objects=" + objects.header.frame_id + " ego=" + ego_odometry.header.frame_id;
+    result.debug =
+      "frame mismatch objects=" + objects.header.frame_id + " ego=" + ego_odometry.header.frame_id;
     return result;
   }
 
@@ -85,12 +86,14 @@ TargetTracker::Result TargetTracker::update(
       if (matches && ahead && in_range) {
         locked_last_seen_stamp_ = now;
         result.locked_uuid = locked_uuid_;
-        result.debug = "keep locked_uuid=" + to_string(*locked_uuid_) + " lon=" + std::to_string(lon);
+        result.debug =
+          "keep locked_uuid=" + to_string(*locked_uuid_) + " lon=" + std::to_string(lon);
         return result;
       }
 
       result.changed = true;
-      result.debug = "unlock invalid locked_uuid=" + to_string(*locked_uuid_) + " lon=" + std::to_string(lon);
+      result.debug =
+        "unlock invalid locked_uuid=" + to_string(*locked_uuid_) + " lon=" + std::to_string(lon);
       locked_uuid_.reset();
     } else {
       const double dt = (now - locked_last_seen_stamp_).seconds();
@@ -101,7 +104,8 @@ TargetTracker::Result TargetTracker::update(
         return result;
       }
       result.changed = true;
-      result.debug = "unlock lost locked_uuid=" + to_string(*locked_uuid_) + " dt=" + std::to_string(dt);
+      result.debug =
+        "unlock lost locked_uuid=" + to_string(*locked_uuid_) + " dt=" + std::to_string(dt);
       locked_uuid_.reset();
     }
   }
@@ -154,7 +158,8 @@ TargetTracker::Result TargetTracker::select_new_target(
 
   result.locked_uuid = best->uuid;
   result.changed = true;
-  result.debug = "select locked_uuid=" + to_string(best->uuid) + " lon=" + std::to_string(best->longitudinal_distance);
+  result.debug = "select locked_uuid=" + to_string(best->uuid) + " lon=" +
+    std::to_string(best->longitudinal_distance);
   return result;
 }
 
@@ -167,9 +172,9 @@ bool TargetTracker::is_bus(
     return false;
   }
 
-  return std::any_of(object.classification.begin(), object.classification.end(), [](const auto & c) {
-    return c.label == ObjectClassification::BUS;
-  });
+  return std::any_of(
+    object.classification.begin(), object.classification.end(),
+    [](const auto & c) { return c.label == ObjectClassification::BUS; });
 }
 
 double TargetTracker::compute_longitudinal_distance(

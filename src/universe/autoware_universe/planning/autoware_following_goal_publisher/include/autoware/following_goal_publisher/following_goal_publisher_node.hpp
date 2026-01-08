@@ -27,6 +27,8 @@
 
 #include <mutex>
 #include <optional>
+#include <string>
+#include <vector>
 
 namespace autoware::following_goal_publisher
 {
@@ -42,10 +44,11 @@ private:
   using Odometry = nav_msgs::msg::Odometry;
   using PoseStamped = geometry_msgs::msg::PoseStamped;
 
-  void on_odometry(const Odometry::ConstSharedPtr msg);
-  void on_objects(const PredictedObjects::ConstSharedPtr msg);
-  void on_timer();
-  rcl_interfaces::msg::SetParametersResult on_parameters(const std::vector<rclcpp::Parameter> & parameters);
+	  void on_odometry(const Odometry::ConstSharedPtr msg);
+	  void on_objects(const PredictedObjects::ConstSharedPtr msg);
+	  void on_timer();
+	  rcl_interfaces::msg::SetParametersResult on_parameters(
+	    const std::vector<rclcpp::Parameter> & parameters);
 
   std::mutex mutex_;
   Odometry::ConstSharedPtr latest_odometry_;

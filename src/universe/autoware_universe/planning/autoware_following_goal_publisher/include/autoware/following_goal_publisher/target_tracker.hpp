@@ -62,7 +62,8 @@ private:
   rclcpp::Time locked_last_seen_stamp_{0, 0, RCL_ROS_TIME};
 
   static bool is_bus(
-    const autoware_perception_msgs::msg::PredictedObject & object, const std::string & target_label);
+    const autoware_perception_msgs::msg::PredictedObject & object,
+    const std::string & target_label);
   static double compute_longitudinal_distance(
     const autoware_perception_msgs::msg::PredictedObject & object,
     const nav_msgs::msg::Odometry & ego_odometry);

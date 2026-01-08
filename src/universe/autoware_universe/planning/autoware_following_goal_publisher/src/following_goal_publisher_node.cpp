@@ -85,7 +85,8 @@ FollowingGoalPublisherNode::FollowingGoalPublisherNode(const rclcpp::NodeOptions
 
   target_label_ = declare_parameter<std::string>("target_type", "BUS");
   lost_timeout_sec_ = declare_parameter<double>("lost_timeout_sec", 1.0);
-  search_range_m_ = declare_parameter<std::vector<double>>("search_range_m", {0.0, 120.0});
+  search_range_m_ =
+    declare_parameter<std::vector<double>>("search_range_m", {0.0, 120.0});
 
   // Keep tracker params consistent with declared parameters.
   TargetTracker::Params p;
@@ -106,8 +107,8 @@ FollowingGoalPublisherNode::FollowingGoalPublisherNode(const rclcpp::NodeOptions
 
   pub_goal_ = create_publisher<PoseStamped>("/planning/mission_planning/goal", make_goal_qos());
 
-  param_cb_handle_ =
-    add_on_set_parameters_callback(std::bind(&FollowingGoalPublisherNode::on_parameters, this, std::placeholders::_1));
+  param_cb_handle_ = add_on_set_parameters_callback(
+    std::bind(&FollowingGoalPublisherNode::on_parameters, this, std::placeholders::_1));
 
   if (!(std::isfinite(publish_rate_hz_) && publish_rate_hz_ > 0.0)) {
     RCLCPP_WARN(get_logger(), "publish_rate_hz is invalid; fallback to 2.0Hz");
@@ -131,7 +132,8 @@ rcl_interfaces::msg::SetParametersResult FollowingGoalPublisherNode::on_paramete
         locked_uuid_.reset();
         last_goal_.reset();
       }
-      RCLCPP_INFO(get_logger(), "enable_auto_follow=%s", enable_auto_follow_ ? "true" : "false");
+      RCLCPP_INFO(
+        get_logger(), "enable_auto_follow=%s", enable_auto_follow_ ? "true" : "false");
     }
   }
 
@@ -162,7 +164,8 @@ void FollowingGoalPublisherNode::on_objects(const PredictedObjects::ConstSharedP
 
   const auto tracker_result = tracker_.update(*msg, *odom);
   if (tracker_result.changed) {
-    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), debug_throttle_ms_, "%s", tracker_result.debug.c_str());
+    RCLCPP_INFO_THROTTLE(
+      get_logger(), *get_clock(), debug_throttle_ms_, "%s", tracker_result.debug.c_str());
   }
 
   std::lock_guard<std::mutex> lock(mutex_);
@@ -215,18 +218,22 @@ void FollowingGoalPublisherNode::on_timer()
   if (pub_goal_->get_subscription_count() == 0) {
     RCLCPP_WARN_THROTTLE(
       get_logger(), *get_clock(), debug_throttle_ms_,
-      "No subscribers on /planning/mission_planning/goal (routing_adaptor not running?); publishing anyway.");
+      "No subscribers on /planning/mission_planning/goal (routing_adaptor not running?); "
+      "publishing anyway.");
   }
 
   const auto publisher_count = count_publishers("/planning/mission_planning/goal");
   if (publisher_count > 1U) {
     RCLCPP_WARN_THROTTLE(
       get_logger(), *get_clock(), debug_throttle_ms_,
-      "Multiple publishers detected on /planning/mission_planning/goal (count=%zu). In auto-follow mode, manual goal may be overridden; disable enable_auto_follow for manual goal.",
+      "Multiple publishers detected on /planning/mission_planning/goal (count=%zu). "
+      "In auto-follow mode, manual goal may be overridden; disable enable_auto_follow for "
+      "manual goal.",
       publisher_count);
   }
 
-  const auto goal_res = generate_goal_pose_ahead(*it, objects->header, ahead_distance_, last_goal);
+  const auto goal_res =
+    generate_goal_pose_ahead(*it, objects->header, ahead_distance_, last_goal);
   if (!goal_res.goal) {
     RCLCPP_WARN_THROTTLE(
       get_logger(), *get_clock(), debug_throttle_ms_,

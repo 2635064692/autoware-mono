@@ -68,7 +68,8 @@ Odometry make_ego(const double x, const double y, const double yaw_rad)
   return odom;
 }
 
-PredictedObjects make_objects(const rclcpp::Time & stamp, const std::initializer_list<PredictedObject> & objects)
+PredictedObjects make_objects(
+  const rclcpp::Time & stamp, const std::initializer_list<PredictedObject> & objects)
 {
   PredictedObjects msg;
   msg.header.frame_id = "map";
@@ -96,7 +97,8 @@ TEST_F(TargetTrackerTest, SelectNearestFrontBus)
   const auto id20 = make_uuid(20);
 
   const auto t = rclcpp::Time(10, 0, RCL_ROS_TIME);
-  const auto objects = make_objects(t, {make_bus(id20, 20.0, 0.0), make_bus(id10, 10.0, 0.0)});
+  const auto objects =
+    make_objects(t, {make_bus(id20, 20.0, 0.0), make_bus(id10, 10.0, 0.0)});
   const auto result = tracker.update(objects, ego);
 
   ASSERT_TRUE(result.locked_uuid.has_value());
@@ -116,7 +118,8 @@ TEST_F(TargetTrackerTest, KeepLockedUntilLostTimeout)
   const auto id20 = make_uuid(20);
 
   const auto t0 = rclcpp::Time(10, 0, RCL_ROS_TIME);
-  const auto objects0 = make_objects(t0, {make_bus(id10, 10.0, 0.0), make_bus(id20, 20.0, 0.0)});
+  const auto objects0 =
+    make_objects(t0, {make_bus(id10, 10.0, 0.0), make_bus(id20, 20.0, 0.0)});
   const auto r0 = tracker.update(objects0, ego);
   ASSERT_TRUE(r0.locked_uuid.has_value());
   EXPECT_EQ(r0.locked_uuid->uuid, id10.uuid);
@@ -162,4 +165,3 @@ TEST_F(TargetTrackerTest, ReSelectWhenLockedBecomesBehind)
 }
 
 }  // namespace autoware::following_goal_publisher::testing
-

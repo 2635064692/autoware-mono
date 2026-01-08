@@ -35,7 +35,8 @@ bool is_finite_pose(const geometry_msgs::msg::Pose & pose)
   const auto & p = pose.position;
   const auto & q = pose.orientation;
   const bool pos_ok = std::isfinite(p.x) && std::isfinite(p.y) && std::isfinite(p.z);
-  const bool ori_ok = std::isfinite(q.x) && std::isfinite(q.y) && std::isfinite(q.z) && std::isfinite(q.w);
+  const bool ori_ok =
+    std::isfinite(q.x) && std::isfinite(q.y) && std::isfinite(q.z) && std::isfinite(q.w);
   return pos_ok && ori_ok;
 }
 
@@ -103,4 +104,3 @@ GoalPoseResult generate_goal_pose_ahead(
 }
 
 }  // namespace autoware::following_goal_publisher
-
