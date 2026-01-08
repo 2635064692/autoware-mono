@@ -196,6 +196,16 @@ timeout 10s ros2 topic echo /planning/scenario_planning/lane_driving/motion_plan
   | tee auto_follow_planning_info.log
 ```
 
+**A0.1 回滚 / 降级 / 排障（自动跟随）**
+
+- 回滚（运行时）：启动时不传 `enable_auto_follow:=true`（或显式 `enable_auto_follow:=false`），系统回到“手动 2D Goal Pose”链路
+- 回滚（配置级）：从 `planning_simulator.launch.xml` 移除自动跟随节点 `<group if="$(var enable_auto_follow)"> ... </group>`（不影响其它模块）
+- 常见故障定位：
+  - `goal` 没更新：`ros2 topic info -v /planning/mission_planning/goal` 确认是否有 publisher；确认启动参数 `enable_auto_follow=true`
+  - `goal` 有更新但不出 route/trajectory：确认 `launch_api=true`（默认 true）且 `routing_adaptor_node` 在跑；用 `ros2 service type /api/routing/set_route_points` 自检 AD API
+  - `goal` 可能落到路外/弯道不稳定：优先减小 `ahead_distance` 或增大阈值节流；长期方案为接入 lanelet 投影（把 goal 投到中心线并沿线推进）
+  - 目标朝向不可用：自动节点会降级为“保持上次 goal / 停止更新并告警”（避免输出 NaN/inf）
+
 **A. 链路连通性检查**
 
 ```bash
