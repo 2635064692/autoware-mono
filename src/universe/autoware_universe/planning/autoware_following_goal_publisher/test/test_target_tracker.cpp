@@ -81,8 +81,8 @@ PredictedObjects make_objects(
 class TargetTrackerTest : public ::testing::Test
 {
 protected:
-  void SetUp() override { rclcpp::init(0, nullptr); }
-  void TearDown() override { rclcpp::shutdown(); }
+  void SetUp() override {rclcpp::init(0, nullptr);}
+  void TearDown() override {rclcpp::shutdown();}
 };
 
 TEST_F(TargetTrackerTest, SelectNearestFrontBus)

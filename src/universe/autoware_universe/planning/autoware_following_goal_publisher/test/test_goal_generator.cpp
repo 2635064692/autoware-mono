@@ -88,4 +88,3 @@ TEST(GoalGeneratorTest, FallbackToLastGoalWhenOrientationInvalid)
 }
 
 }  // namespace autoware::following_goal_publisher::testing
-

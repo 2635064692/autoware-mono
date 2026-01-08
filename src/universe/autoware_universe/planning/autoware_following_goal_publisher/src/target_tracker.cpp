@@ -45,7 +45,8 @@ double normalize_yaw(const double yaw)
 
 }  // namespace
 
-TargetTracker::TargetTracker(const Params & params) : params_(params) {}
+TargetTracker::TargetTracker(const Params & params)
+: params_(params) {}
 
 void TargetTracker::reset()
 {
@@ -74,7 +75,7 @@ TargetTracker::Result TargetTracker::update(
   if (locked_uuid_) {
     const auto it = std::find_if(
       objects.objects.begin(), objects.objects.end(),
-      [this](const auto & o) { return o.object_id == *locked_uuid_; });
+      [this](const auto & o) {return o.object_id == *locked_uuid_;});
 
     if (it != objects.objects.end()) {
       const double lon = compute_longitudinal_distance(*it, ego_odometry);
@@ -174,7 +175,7 @@ bool TargetTracker::is_bus(
 
   return std::any_of(
     object.classification.begin(), object.classification.end(),
-    [](const auto & c) { return c.label == ObjectClassification::BUS; });
+    [](const auto & c) {return c.label == ObjectClassification::BUS;});
 }
 
 double TargetTracker::compute_longitudinal_distance(

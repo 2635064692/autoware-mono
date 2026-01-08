@@ -26,10 +26,10 @@ TargetTrackerNode::TargetTrackerNode(const rclcpp::NodeOptions & options)
 : Node("following_target_tracker", options),
   tracker_(
     TargetTracker::Params{
-      declare_parameter<std::string>("target_label", "BUS"),
-      declare_parameter<double>("min_longitudinal_distance", 0.0),
-      declare_parameter<double>("max_longitudinal_distance", 120.0),
-      declare_parameter<double>("lost_timeout_sec", 1.0)})
+    declare_parameter<std::string>("target_label", "BUS"),
+    declare_parameter<double>("min_longitudinal_distance", 0.0),
+    declare_parameter<double>("max_longitudinal_distance", 120.0),
+    declare_parameter<double>("lost_timeout_sec", 1.0)})
 {
   debug_throttle_ms_ = declare_parameter<int>("debug_throttle_ms", 2000);
 
