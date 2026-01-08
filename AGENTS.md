@@ -53,8 +53,8 @@ src/
 - 主容器：`heuristic_joliot`
 - 镜像：`autoware:universe-devel-cuda`
 - ROS：`humble`
-- 远端仓库目录（Host）：`/autoware-mono`
-- 容器内仓库目录（Container）：`/workspace`（与 Host 的 `/autoware-mono` 对应/挂载）
+- 远端仓库目录（Host）：`/home/ubuntu/autoware-mono`
+- 容器内仓库目录（Container）：`/workspace`（与 Host 的 `/home/ubuntu/autoware-mono` 对应/挂载）
 
 使用方式（示例）：
 
@@ -69,10 +69,8 @@ execute-command(cmdString: "docker exec heuristic_joliot bash -c '命令'", conn
 容器内常用命令：
 
 ```bash
-# 拉取最新代码（推荐：Host pull 一次即可；若未挂载则在容器内 pull）
-cd /autoware-mono && git pull
-# 或
-docker exec heuristic_joliot bash -c "cd /workspace && git pull"
+# 拉取最新代码（必须在 Host 上执行；不要在容器内 pull）
+cd /home/ubuntu/autoware-mono && git pull
 
 # 编译指定包
 docker exec heuristic_joliot bash -c "source /opt/ros/humble/setup.bash && cd /workspace && colcon build --packages-select <package_name> --symlink-install"
@@ -121,7 +119,7 @@ docker exec heuristic_joliot bash -c "source /workspace/install/setup.bash && ro
 
 ### 4) 远端容器验证（强烈推荐）
 
-- 远端执行：`mcp__mcp-router__execute-command`（在 `heuristic_joliot` 容器内 `git pull`、`colcon build --packages-select ...`、`ros2 launch`、`ros2 topic echo`）。
+- 远端执行：`mcp__mcp-router__execute-command`（Host 上 `git pull`；容器内 `colcon build --packages-select ...`、`ros2 launch`、`ros2 topic echo`）。
 - 文件传输（可选）：`mcp__mcp-router__upload` / `mcp__mcp-router__download`
 
 ### 5) 视觉/现象确认（可选）
