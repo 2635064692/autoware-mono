@@ -23,6 +23,7 @@
 #include <autoware_perception_msgs/msg/predicted_objects.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <nav_msgs/msg/odometry.hpp>
+#include <rcl_interfaces/msg/set_parameters_result.hpp>
 
 #include <mutex>
 #include <optional>
@@ -44,6 +45,7 @@ private:
   void on_odometry(const Odometry::ConstSharedPtr msg);
   void on_objects(const PredictedObjects::ConstSharedPtr msg);
   void on_timer();
+  rcl_interfaces::msg::SetParametersResult on_parameters(const std::vector<rclcpp::Parameter> & parameters);
 
   std::mutex mutex_;
   Odometry::ConstSharedPtr latest_odometry_;
@@ -57,6 +59,7 @@ private:
   rclcpp::Subscription<PredictedObjects>::SharedPtr sub_objects_;
   rclcpp::Publisher<PoseStamped>::SharedPtr pub_goal_;
   rclcpp::TimerBase::SharedPtr timer_;
+  OnSetParametersCallbackHandle::SharedPtr param_cb_handle_;
 
   bool enable_auto_follow_{false};
   double publish_rate_hz_{2.0};
@@ -76,4 +79,3 @@ private:
 }  // namespace autoware::following_goal_publisher
 
 #endif  // AUTOWARE__FOLLOWING_GOAL_PUBLISHER__FOLLOWING_GOAL_PUBLISHER_NODE_HPP_
-

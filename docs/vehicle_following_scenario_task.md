@@ -166,6 +166,7 @@ ros2 launch autoware_launch planning_simulator.launch.xml \
      - **Service**（路由 AD API）：`/api/routing/set_route_points`（`autoware_adapi_v1_msgs/srv/SetRoutePoints`）、`/api/routing/clear_route`（`autoware_adapi_v1_msgs/srv/ClearRoute`）
    - 自动发布建议：
      - 发布频率建议 `<= 2Hz`，并配合位置/角度阈值做节流，避免触发频繁重规划
+     - **互斥策略**：启用自动跟随（`enable_auto_follow=true`）时不要再使用 RViz 的 "2D Goal Pose"；如需手动 goal，请关闭自动跟随（否则自动节点会持续更新并覆盖手动 goal，并输出告警日志）
    - 自车将自动规划并跟随 Bus
 
 ### 3.3 验证步骤
