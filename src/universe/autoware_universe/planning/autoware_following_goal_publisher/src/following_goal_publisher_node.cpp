@@ -200,7 +200,7 @@ void FollowingGoalPublisherNode::on_timer()
   if (!locked) {
     RCLCPP_DEBUG_THROTTLE(
       get_logger(), *get_clock(), debug_throttle_ms_,
-      "No locked BUS; skip publishing goal.");
+      "No locked target (target_type=%s); skip publishing goal.", target_label_.c_str());
     return;
   }
 

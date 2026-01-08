@@ -157,6 +157,8 @@ ros2 launch autoware_launch planning_simulator.launch.xml \
          enable_auto_follow:=true \
          ahead_distance:=50.0 \
          target_type:=BUS
+     # 跟随行人（分类标签为 PEDESTRIAN；也支持别名 PERSON/HUMAN）
+     # target_type:=PEDESTRIAN
      ```
 
 2. **放置 Bus 障碍物**

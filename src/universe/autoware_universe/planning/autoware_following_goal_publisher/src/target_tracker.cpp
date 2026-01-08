@@ -20,6 +20,7 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 #include <algorithm>
+#include <cctype>
 #include <cmath>
 #include <iomanip>
 #include <sstream>
@@ -60,6 +61,15 @@ TargetTracker::Result TargetTracker::update(
 {
   Result result;
 
+  const auto target_label_id = resolve_target_label_id(params_.target_label);
+  if (!target_label_id) {
+    locked_uuid_.reset();
+    locked_last_seen_stamp_ = rclcpp::Time{0, 0, RCL_ROS_TIME};
+    result.changed = true;
+    result.debug = "unsupported target_label=" + params_.target_label;
+    return result;
+  }
+
   if (objects.header.frame_id.empty() || ego_odometry.header.frame_id.empty()) {
     result.debug = "missing frame_id";
     return result;
@@ -82,7 +92,7 @@ TargetTracker::Result TargetTracker::update(
       const bool ahead = lon > 0.0;
       const bool in_range =
         params_.min_longitudinal_distance <= lon && lon <= params_.max_longitudinal_distance;
-      const bool matches = is_bus(*it, params_.target_label);
+      const bool matches = matches_target(*it, *target_label_id);
 
       if (matches && ahead && in_range) {
         locked_last_seen_stamp_ = now;
@@ -135,9 +145,16 @@ TargetTracker::Result TargetTracker::select_new_target(
     double longitudinal_distance;
   };
 
+  const auto target_label_id = resolve_target_label_id(params_.target_label);
+  if (!target_label_id) {
+    result.changed = true;
+    result.debug = "unsupported target_label=" + params_.target_label;
+    return result;
+  }
+
   std::optional<Candidate> best;
   for (const auto & o : objects.objects) {
-    if (!is_bus(o, params_.target_label)) {
+    if (!matches_target(o, *target_label_id)) {
       continue;
     }
     const double lon = compute_longitudinal_distance(o, ego_odometry);
@@ -164,18 +181,40 @@ TargetTracker::Result TargetTracker::select_new_target(
   return result;
 }
 
-bool TargetTracker::is_bus(
-  const autoware_perception_msgs::msg::PredictedObject & object, const std::string & target_label)
+std::optional<uint8_t> TargetTracker::resolve_target_label_id(const std::string & target_label)
 {
   using autoware_perception_msgs::msg::ObjectClassification;
-  const auto target_is_bus = (target_label == "BUS");
-  if (!target_is_bus) {
-    return false;
-  }
 
+  std::string normalized = target_label;
+  std::transform(
+    normalized.begin(), normalized.end(), normalized.begin(),
+    [](const unsigned char c) {return static_cast<char>(std::toupper(c));});
+
+  if (normalized == "BUS") {
+    return ObjectClassification::BUS;
+  }
+  if (normalized == "PEDESTRIAN" || normalized == "PERSON" || normalized == "HUMAN") {
+    return ObjectClassification::PEDESTRIAN;
+  }
+  return std::nullopt;
+}
+
+bool TargetTracker::matches_target(
+  const autoware_perception_msgs::msg::PredictedObject & object, const uint8_t target_label_id)
+{
   return std::any_of(
     object.classification.begin(), object.classification.end(),
-    [](const auto & c) {return c.label == ObjectClassification::BUS;});
+    [target_label_id](const auto & c) {return c.label == target_label_id;});
+}
+
+bool TargetTracker::matches_target_label(
+  const autoware_perception_msgs::msg::PredictedObject & object, const std::string & target_label)
+{
+  const auto target_label_id = resolve_target_label_id(target_label);
+  if (!target_label_id) {
+    return false;
+  }
+  return matches_target(object, *target_label_id);
 }
 
 double TargetTracker::compute_longitudinal_distance(

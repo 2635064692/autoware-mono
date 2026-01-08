@@ -42,17 +42,27 @@ UUID make_uuid(const uint8_t seed)
   return id;
 }
 
-PredictedObject make_bus(const UUID & uuid, const double x, const double y)
+PredictedObject make_object(const UUID & uuid, const double x, const double y, const uint8_t label)
 {
   PredictedObject o;
   o.object_id = uuid;
   ObjectClassification c;
-  c.label = ObjectClassification::BUS;
+  c.label = label;
   c.probability = 1.0;
   o.classification.push_back(c);
   o.kinematics.initial_pose_with_covariance.pose.position.x = x;
   o.kinematics.initial_pose_with_covariance.pose.position.y = y;
   return o;
+}
+
+PredictedObject make_bus(const UUID & uuid, const double x, const double y)
+{
+  return make_object(uuid, x, y, ObjectClassification::BUS);
+}
+
+PredictedObject make_pedestrian(const UUID & uuid, const double x, const double y)
+{
+  return make_object(uuid, x, y, ObjectClassification::PEDESTRIAN);
 }
 
 Odometry make_ego(const double x, const double y, const double yaw_rad)
@@ -88,6 +98,7 @@ protected:
 TEST_F(TargetTrackerTest, SelectNearestFrontBus)
 {
   TargetTracker::Params p;
+  p.target_label = "BUS";
   p.max_longitudinal_distance = 100.0;
   p.lost_timeout_sec = 1.0;
   TargetTracker tracker(p);
@@ -106,9 +117,32 @@ TEST_F(TargetTrackerTest, SelectNearestFrontBus)
   EXPECT_TRUE(result.changed);
 }
 
+TEST_F(TargetTrackerTest, SelectNearestFrontPedestrian)
+{
+  TargetTracker::Params p;
+  p.target_label = "PEDESTRIAN";
+  p.max_longitudinal_distance = 100.0;
+  p.lost_timeout_sec = 1.0;
+  TargetTracker tracker(p);
+
+  const auto ego = make_ego(0.0, 0.0, 0.0);
+  const auto id10 = make_uuid(10);
+  const auto id20 = make_uuid(20);
+
+  const auto t = rclcpp::Time(10, 0, RCL_ROS_TIME);
+  const auto objects = make_objects(
+    t, {make_pedestrian(id20, 20.0, 0.0), make_pedestrian(id10, 10.0, 0.0)});
+  const auto result = tracker.update(objects, ego);
+
+  ASSERT_TRUE(result.locked_uuid.has_value());
+  EXPECT_EQ(result.locked_uuid->uuid, id10.uuid);
+  EXPECT_TRUE(result.changed);
+}
+
 TEST_F(TargetTrackerTest, KeepLockedUntilLostTimeout)
 {
   TargetTracker::Params p;
+  p.target_label = "BUS";
   p.max_longitudinal_distance = 100.0;
   p.lost_timeout_sec = 2.0;
   TargetTracker tracker(p);
@@ -142,6 +176,7 @@ TEST_F(TargetTrackerTest, KeepLockedUntilLostTimeout)
 TEST_F(TargetTrackerTest, ReSelectWhenLockedBecomesBehind)
 {
   TargetTracker::Params p;
+  p.target_label = "BUS";
   p.max_longitudinal_distance = 100.0;
   p.lost_timeout_sec = 2.0;
   TargetTracker tracker(p);
@@ -162,6 +197,27 @@ TEST_F(TargetTrackerTest, ReSelectWhenLockedBecomesBehind)
   const auto r1 = tracker.update(objects1, ego);
   ASSERT_TRUE(r1.locked_uuid.has_value());
   EXPECT_EQ(r1.locked_uuid->uuid, id20.uuid);
+}
+
+TEST_F(TargetTrackerTest, IgnoreNonTargetLabel)
+{
+  TargetTracker::Params p;
+  p.target_label = "PEDESTRIAN";
+  p.max_longitudinal_distance = 100.0;
+  p.lost_timeout_sec = 1.0;
+  TargetTracker tracker(p);
+
+  const auto ego = make_ego(0.0, 0.0, 0.0);
+  const auto id10 = make_uuid(10);
+  const auto id20 = make_uuid(20);
+
+  const auto t = rclcpp::Time(10, 0, RCL_ROS_TIME);
+  const auto objects =
+    make_objects(t, {make_bus(id10, 10.0, 0.0), make_pedestrian(id20, 20.0, 0.0)});
+  const auto result = tracker.update(objects, ego);
+
+  ASSERT_TRUE(result.locked_uuid.has_value());
+  EXPECT_EQ(result.locked_uuid->uuid, id20.uuid);
 }
 
 }  // namespace autoware::following_goal_publisher::testing

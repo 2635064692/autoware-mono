@@ -21,6 +21,7 @@
 #include <nav_msgs/msg/odometry.hpp>
 #include <unique_identifier_msgs/msg/uuid.hpp>
 
+#include <cstdint>
 #include <optional>
 #include <string>
 
@@ -61,7 +62,11 @@ private:
   std::optional<unique_identifier_msgs::msg::UUID> locked_uuid_;
   rclcpp::Time locked_last_seen_stamp_{0, 0, RCL_ROS_TIME};
 
-  static bool is_bus(
+  static std::optional<uint8_t> resolve_target_label_id(const std::string & target_label);
+  static bool matches_target(
+    const autoware_perception_msgs::msg::PredictedObject & object, uint8_t target_label_id);
+
+  static bool matches_target_label(
     const autoware_perception_msgs::msg::PredictedObject & object,
     const std::string & target_label);
   static double compute_longitudinal_distance(
