@@ -22,6 +22,11 @@ rclcpp_components_register_node(
   PLUGIN "autoware::following_goal_publisher::TargetTrackerNode"
   EXECUTABLE ${PROJECT_NAME}_target_tracker_node)
 
+rclcpp_components_register_node(
+  ${PROJECT_NAME}
+  PLUGIN "autoware::following_goal_publisher::FollowingGoalPublisherNode"
+  EXECUTABLE ${PROJECT_NAME}_node)
+
 if(BUILD_TESTING)
   find_package(ament_cmake_ros REQUIRED)
 
