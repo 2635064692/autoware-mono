@@ -158,6 +158,14 @@ ros2 launch autoware_launch planning_simulator.launch.xml \
 
 3. **设置目标点**
    - 使用 "2D Goal Pose" 在 Bus 前方设置目标点
+   - 目标入口（手动与自动应复用同一入口）：
+     - **Topic**：`/planning/mission_planning/goal`
+     - **Type**：`geometry_msgs/msg/PoseStamped`
+     - **QoS（RViz 默认配置）**：Reliable + Volatile，Depth=5（见 `src/launcher/autoware_launch/autoware_launch/rviz/autoware.rviz:4187`）
+     - 该 topic 由 `autoware_adapi_adaptors` 的 `routing_adaptor_node` 订阅，并转换为路由 AD API 的 service 调用（无需改动 mission_planner）
+     - **Service**（路由 AD API）：`/api/routing/set_route_points`（`autoware_adapi_v1_msgs/srv/SetRoutePoints`）、`/api/routing/clear_route`（`autoware_adapi_v1_msgs/srv/ClearRoute`）
+   - 自动发布建议：
+     - 发布频率建议 `<= 2Hz`，并配合位置/角度阈值做节流，避免触发频繁重规划
    - 自车将自动规划并跟随 Bus
 
 ### 3.3 验证步骤
@@ -165,6 +173,13 @@ ros2 launch autoware_launch planning_simulator.launch.xml \
 **A. 链路连通性检查**
 
 ```bash
+# 0. 确认 RViz 目标入口与消息类型
+ros2 topic info -v /planning/mission_planning/goal
+
+# 0.1 确认 route 设置链路的 service 类型（routing_adaptor 会调用这些 API）
+ros2 service type /api/routing/set_route_points
+ros2 service type /api/routing/clear_route
+
 # 1. 检查 DummyObject 是否发布
 ros2 topic echo /simulation/dummy_perception_publisher/object_info --once
 
